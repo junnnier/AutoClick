@@ -1,6 +1,6 @@
 from tkinter import Tk,Canvas
 from datetime import datetime
-from pynput.keyboard import Key,Listener,Controller
+from pynput import keyboard
 import ctypes
 
 class PrScreen(object):
@@ -28,9 +28,7 @@ prscreen = PrScreen()
 
 def print_text(tk_Text,string):
     tk_Text["state"] = "normal"
-    current_time=datetime.strftime(datetime.now(),"%Y-%m-%d %H:%M:%S.%f")
-    tk_Text.insert("end", "{}\n{}\n".format(current_time[:-3],string))
-    tk_Text.update()
+    tk_Text.insert("end", "{}\n{}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],string))
     tk_Text.see("end")
     tk_Text["state"] = "disable"
 
@@ -52,28 +50,11 @@ def stop_thread(thread):
     thread._is_stopped = True
     _async_raise(thread.ident, Define_error)
 
-def key_press(key):
-    return True
-
-def key_release(key):
-    if key==Key.esc:
+def key_release(key,click_thread,tk_Text):
+    if key==keyboard.Key.esc:
+        stop_thread(click_thread)
+        print_text(tk_Text, "-----手动中断-----")
         return False
-
-# 监控线程执行
-def monitor_thread_execution(tk_root,tk_Text,click_thread):
-    listener=Listener(on_press=key_press,on_release=key_release)
-    listener.start()
-    keyboard=Controller()
-    tk_root.iconify()  # 最小化窗口
-    while True:
-        if not click_thread.is_alive():
-            keyboard.release(Key.esc)  # 模拟按下esc结束监听线程
-            break
-        if not listener.is_alive():
-            stop_thread(click_thread)
-            print_text(tk_Text, "-----手动中断-----")
-            break
-    tk_root.deiconify()
 
 
 if __name__ == '__main__':

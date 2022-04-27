@@ -5,10 +5,11 @@ import tkinter as tk
 from tkinter import messagebox,filedialog
 from tkinter import ttk
 from data import db
-from tools import prscreen,print_text,monitor_thread_execution
+from tools import prscreen,print_text,key_release
 from auto_click import AUTO_CLICK
 from threading import Thread
 import webbrowser
+from pynput.keyboard import Listener
 
 class Mainwindow():
     def __init__(self):
@@ -18,7 +19,7 @@ class Mainwindow():
         self.root.resizable(0,0)
         self.create_page()
         self.root.iconbitmap(os.path.join(self.resource_path(),'logo.ico'))
-        self.auto_click = AUTO_CLICK(self.info_text)
+        self.auto_click = AUTO_CLICK(self.info_text,self.root)
         self.root.mainloop()
 
     def create_page(self):
@@ -28,6 +29,8 @@ class Mainwindow():
         filemenu.add_command(label="保存到...",command=self.save_to_csv)
         filemenu.add_command(label="导入",command=self.load_csv_file)
         filemenu.add_command(label="清空指令",command=self.delete_table_all_data)
+        self.keep_root_value=tk.IntVar()
+        filemenu.add_checkbutton(label="保持显示",variable=self.keep_root_value)
         filemenu.add_separator()
         filemenu.add_command(label="退出",command=self.root.quit)
         aboutmenu = tk.Menu(meunbar,tearoff=0)
@@ -204,12 +207,13 @@ class Mainwindow():
     # 开始按钮
     def start_button(self):
         print_text(self.info_text,"开始运行...")
+        if not self.keep_root_value.get():
+            self.root.iconify()  # 最小化窗口
         click_thread=Thread(target=self.auto_click.start,args=(db.data,))
         click_thread.setDaemon(True)
-        monitor_thread=Thread(target=monitor_thread_execution,args=(self.root,self.info_text,click_thread))
-        monitor_thread.setDaemon(True)
+        listener = Listener(on_release=lambda key:key_release(key,click_thread,self.info_text))
+        listener.start()
         click_thread.start()
-        monitor_thread.start()
 
     # 禁止移动列宽
     def handle_move_column(self,event):

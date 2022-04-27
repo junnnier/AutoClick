@@ -2,10 +2,13 @@ import time
 import pyautogui
 import pyperclip
 from tools import print_text
+from pynput.keyboard import Controller,Key
 
 class AUTO_CLICK(object):
-    def __init__(self,tk_Text):
+    def __init__(self,tk_Text,tk_root):
         self.tk_Text=tk_Text
+        self.tk_root=tk_root
+        self.keyboard=Controller()
 
     def start(self,data,repetition=False):
         try:
@@ -15,8 +18,13 @@ class AUTO_CLICK(object):
             else:
                 self.__begin_work(data)
             print_text(self.tk_Text, "-----完成-----")
+            self.tk_root.deiconify()
         except ValueError:
             print_text(self.tk_Text, "命令出错!!!")
+            self.tk_root.deiconify()
+        finally:
+            time.sleep(1)
+            self.keyboard.press(Key.esc)  # 模拟按键esc结束监听线程
 
     def __begin_work(self,commands):
         total_num=len(commands)
