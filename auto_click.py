@@ -10,7 +10,7 @@ class AUTO_CLICK(object):
         self.tk_root=tk_root
         self.keyboard=Controller()
 
-    def start(self,data,repetition=False):
+    def start(self,data,repetition):
         try:
             if repetition:
                 while True:
@@ -21,8 +21,8 @@ class AUTO_CLICK(object):
             self.tk_root.deiconify()
         except ValueError:
             print_text(self.tk_Text, "命令出错!!!")
-            self.tk_root.deiconify()
         finally:
+            self.tk_root.deiconify()
             time.sleep(1)
             self.keyboard.press(Key.esc)  # 模拟按键esc结束监听线程
 

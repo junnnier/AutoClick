@@ -29,8 +29,11 @@ class Mainwindow():
         filemenu.add_command(label="保存到...",command=self.save_to_csv)
         filemenu.add_command(label="导入",command=self.load_csv_file)
         filemenu.add_command(label="清空指令",command=self.delete_table_all_data)
+        filemenu.add_separator()
         self.keep_root_value=tk.IntVar()
         filemenu.add_checkbutton(label="保持显示",variable=self.keep_root_value)
+        self.loop_execution_value=tk.IntVar()
+        filemenu.add_checkbutton(label="循环执行",variable=self.loop_execution_value)
         filemenu.add_separator()
         filemenu.add_command(label="退出",command=self.root.quit)
         aboutmenu = tk.Menu(meunbar,tearoff=0)
@@ -209,7 +212,7 @@ class Mainwindow():
         print_text(self.info_text,"开始运行...")
         if not self.keep_root_value.get():
             self.root.iconify()  # 最小化窗口
-        click_thread=Thread(target=self.auto_click.start,args=(db.data,))
+        click_thread=Thread(target=self.auto_click.start,args=(db.data,self.loop_execution_value.get()))
         click_thread.setDaemon(True)
         listener = Listener(on_release=lambda key:key_release(key,click_thread,self.info_text))
         listener.start()
