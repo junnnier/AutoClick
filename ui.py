@@ -34,6 +34,12 @@ class Mainwindow():
         filemenu.add_checkbutton(label="保持显示",variable=self.keep_root_value)
         self.loop_execution_value=tk.IntVar()
         filemenu.add_checkbutton(label="循环执行",variable=self.loop_execution_value)
+        modemenu=tk.Menu(filemenu,tearoff=0)
+        self.mode_value=tk.IntVar()
+        self.mode_value.set(1)
+        modemenu.add_radiobutton(label="模拟",variable=self.mode_value,value=1)
+        modemenu.add_radiobutton(label="快速",variable=self.mode_value,value=2)
+        filemenu.add_cascade(label="点击模式",menu=modemenu)
         filemenu.add_separator()
         filemenu.add_command(label="退出",command=self.root.quit)
         aboutmenu = tk.Menu(meunbar,tearoff=0)
@@ -212,7 +218,11 @@ class Mainwindow():
         print_text(self.info_text,"开始运行...")
         if not self.keep_root_value.get():
             self.root.iconify()  # 最小化窗口
-        click_thread=Thread(target=self.auto_click.start,args=(db.data,self.loop_execution_value.get()))
+        if self.mode_value.get()==1:
+            set_time=0.2
+        else:
+            set_time=0.0
+        click_thread=Thread(target=self.auto_click.start,args=(db.data,self.loop_execution_value.get(),set_time))
         click_thread.setDaemon(True)
         listener = Listener(on_release=lambda key:key_release(key,click_thread,self.info_text))
         listener.start()

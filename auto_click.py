@@ -10,13 +10,13 @@ class AUTO_CLICK(object):
         self.tk_root=tk_root
         self.keyboard=Controller()
 
-    def start(self,data,repetition):
+    def start(self,data,repetition,set_time):
         try:
             if repetition:
                 while True:
-                    self.__begin_work(data)
+                    self.__begin_work(data,set_time)
             else:
-                self.__begin_work(data)
+                self.__begin_work(data,set_time)
             print_text(self.tk_Text, "-----完成-----")
             self.tk_root.deiconify()
         except ValueError:
@@ -26,7 +26,7 @@ class AUTO_CLICK(object):
             time.sleep(1)
             self.keyboard.press(Key.esc)  # 模拟按键esc结束监听线程
 
-    def __begin_work(self,commands):
+    def __begin_work(self,commands,set_time):
         total_num=len(commands)
         # 执行每一行
         for i,command in enumerate(commands):
@@ -37,31 +37,31 @@ class AUTO_CLICK(object):
                 if reTry:
                     for re in range(reTry):
                         print_text(self.tk_Text,"[{}/{}] 单击：{}".format(i+1,total_num,opt_object))
-                        self.__mouseclick(1, "left", opt_object)
+                        self.__mouseclick(1, "left", opt_object, set_time)
                 else:
                     while True:
                         print_text(self.tk_Text,"[{}/{}] 单击：{}".format(i+1, total_num, opt_object))
-                        self.__mouseclick(1, "left", opt_object)
+                        self.__mouseclick(1, "left", opt_object, set_time)
             # 2双击左键
             elif opt_command == "双击":
                 if reTry:
                     for re in range(reTry):
                         print_text(self.tk_Text,"[{}/{}] 双击：{}".format(i+1,total_num,opt_object))
-                        self.__mouseclick(2, "left", opt_object)
+                        self.__mouseclick(2, "left", opt_object, set_time)
                 else:
                     while True:
                         print_text(self.tk_Text,"[{}/{}] 双击：{}".format(i+1,total_num,opt_object))
-                        self.__mouseclick(2, "left", opt_object)
+                        self.__mouseclick(2, "left", opt_object, set_time)
             # 3右键
             elif opt_command == "右键":
                 if reTry:
                     for re in range(reTry):
                         print_text(self.tk_Text,"[{}/{}] 右键：{}".format(i+1,total_num,opt_object))
-                        self.__mouseclick(1, "right", opt_object)
+                        self.__mouseclick(1, "right", opt_object, set_time)
                 else:
                     while True:
                         print_text(self.tk_Text,"[{}/{}] 右键：{}".format(i+1,total_num,opt_object))
-                        self.__mouseclick(1, "right", opt_object)
+                        self.__mouseclick(1, "right", opt_object, set_time)
             # 4输入
             elif opt_command == "输入":
                 print_text(self.tk_Text,"[{}/{}] 输入：{}".format(i+1,total_num,opt_object))
@@ -76,7 +76,7 @@ class AUTO_CLICK(object):
                 print_text(self.tk_Text,"[{}/{}] 滚轮：{}像素".format(i+1,total_num,int(opt_object)))
                 pyautogui.scroll(int(opt_object))
                 
-    def __mouseclick(self,clickTimes,l_or_r,obj):
+    def __mouseclick(self,clickTimes,l_or_r,obj,set_time):
         # 处理坐标位置
         if ".png" not in obj:
             obj=obj[1:-1].split(",")
@@ -86,10 +86,10 @@ class AUTO_CLICK(object):
                 # 根据图片找到位置
                 location = pyautogui.locateCenterOnScreen(obj, confidence=0.9)
                 if location is not None:
-                    pyautogui.click(location.x, location.y, clicks=clickTimes, interval=0.2, duration=0.2, button=l_or_r)
+                    pyautogui.click(location.x, location.y, clicks=clickTimes, interval=set_time, duration=set_time, button=l_or_r)
                     break
                 print_text(self.tk_Text,"等待匹配,0.5秒后重试")
                 time.sleep(0.5)
         # 操作位置
         else:
-            pyautogui.click(int(obj[0]), int(obj[1]), clicks=clickTimes, interval=0.2, duration=0.2, button=l_or_r)
+            pyautogui.click(int(obj[0]), int(obj[1]), clicks=clickTimes, interval=set_time, duration=set_time, button=l_or_r)
