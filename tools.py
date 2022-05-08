@@ -6,12 +6,22 @@ import ctypes
 class PrScreen(object):
     def xFunc1(self, event):
         # 鼠标左键按下
-        if event.state == 8:
-            self.position=(event.x,event.y)
-            self.__win.quit()
-            self.__win.destroy()
+        self.position=(event.x,event.y)
+        self.__win.quit()
+        self.__win.destroy()
 
-    def start(self):
+    def xFunc2(self, event):
+        # 鼠标左键按下
+        self.drag=list()
+        self.drag.append((event.x,event.y))
+
+    def xFunc3(self, event):
+        # 鼠标左键释放
+        self.drag.append((event.x,event.y))
+        self.__win.quit()
+        self.__win.destroy()
+
+    def start(self,opt):
         self.__win = Tk()
         self.__win.attributes("-alpha", 0.4)
         self.__win.attributes("-fullscreen", True)
@@ -21,7 +31,11 @@ class PrScreen(object):
         # 创建画布
         self.__canvas = Canvas(self.__win, width=self.__width, height=self.__height)
         # 绑定事件
-        self.__win.bind('<Button-1>', self.xFunc1)
+        if opt=="click":
+            self.__win.bind('<ButtonPress-1>', self.xFunc1)
+        else:
+            self.__win.bind('<ButtonPress-1>', self.xFunc2)
+            self.__win.bind('<ButtonRelease-1>', self.xFunc3)
         self.__win.mainloop()
 
 prscreen = PrScreen()
@@ -58,4 +72,4 @@ def key_release(key,click_thread,tk_Text):
 
 
 if __name__ == '__main__':
-    prscreen.start()
+    prscreen.start("click")

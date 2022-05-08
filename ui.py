@@ -69,7 +69,7 @@ class Mainwindow():
         command_frame.grid(row=0,column=0,padx=10,pady=10,sticky="W")
         command_label=tk.Label(command_frame,text="指令类型：")
         command_label.grid(row=0,column=0)
-        self.command_combobox=ttk.Combobox(command_frame,width=4,state="readonly",value=["单击","双击","右键","输入","等待","滚轮"])
+        self.command_combobox=ttk.Combobox(command_frame,width=4,state="readonly",value=["单击","双击","右键","拖拽","输入","等待","滚轮"])
         self.command_combobox.current(0)
         self.command_combobox.grid(row=0,column=1)
         self.command_combobox.bind("<<ComboboxSelected>>",self.combobox_choice)
@@ -90,11 +90,13 @@ class Mainwindow():
         self.operate_entry.grid(row=0,column=1)
         # -----
         button_frame=tk.Frame(label_frame)
-        button_frame.grid(row=2,column=0,columnspan=2,padx=(75,0),pady=10,sticky="NSWE")
+        button_frame.grid(row=2,column=0,columnspan=2,padx=(10,0),pady=10,sticky="NSWE")
         add_button=tk.Button(button_frame,text="点击位置",command=self.get_pixel_position)
         add_button.grid(row=0,column=0)
-        add_button=tk.Button(button_frame,text="图片路径",command=self.get_image_path)
+        add_button=tk.Button(button_frame,text="拖拽位置",command=self.get_drag_position)
         add_button.grid(row=0,column=1,padx=(10,0))
+        add_button=tk.Button(button_frame,text="图片路径",command=self.get_image_path)
+        add_button.grid(row=0,column=2,padx=(10,0))
         # -----
         button_frame_2=tk.Frame(label_frame)
         button_frame_2.grid(row=2,column=2,columnspan=2,padx=(20,10),pady=10,sticky="NSWE")
@@ -187,9 +189,17 @@ class Mainwindow():
     # 获取点击像素位置
     def get_pixel_position(self):
         self.root.iconify()
-        prscreen.start()
+        prscreen.start("click")
         self.operate_entry.delete(0,"end")  # 清空
         self.operate_entry.insert(0,str(prscreen.position))
+        self.root.deiconify()
+
+    # 获取拖拽像素位置
+    def get_drag_position(self):
+        self.root.iconify()
+        prscreen.start("drag")
+        self.operate_entry.delete(0,"end")  # 清空
+        self.operate_entry.insert(0," -> ".join([str(i) for i in prscreen.drag]))
         self.root.deiconify()
 
     # 获取图片路径
