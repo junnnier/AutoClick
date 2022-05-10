@@ -93,7 +93,7 @@ class AUTO_CLICK(object):
         if type(obj) is str:
             while True:
                 # 根据图片找到位置
-                location = pyautogui.locateCenterOnScreen(obj, confidence=0.9)
+                location = pyautogui.locateCenterOnScreen(obj, confidence=0.8)
                 if location is not None:
                     pyautogui.click(location.x, location.y, clicks=clickTimes, interval=set_time, duration=set_time, button=l_or_r)
                     break
