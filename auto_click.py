@@ -18,8 +18,8 @@ class AUTO_CLICK(object):
             else:
                 self.__begin_work(data,set_time)
             print_text(self.tk_Text, "-----完成-----")
-        except ValueError:
-            print_text(self.tk_Text, "命令出错!!!")
+        except (ValueError,OSError):
+            print_text(self.tk_Text, "系统或命令出错!!!")
         finally:
             self.tk_root.deiconify()
             time.sleep(1)
